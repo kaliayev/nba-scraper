@@ -50,7 +50,7 @@
                         (assoc acc (keyword stat) (value-over-replacement fantasy-season stat player-season)))
                       {} fantasy-cats)
         vorp-sum (reduce-kv (fn [acc k v]
-                              (if (contains? punts (name k))
+                              (if (contains? (set punts) (name k))
                                 acc
                                 (+ acc v)))
                             0 vorps)]

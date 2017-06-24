@@ -8,19 +8,15 @@
   [fantasy-season stat player-season]
   (let [position (:pos player-season)
         season-by-position (stat-utils/season-by-position fantasy-season position)
-        position-made (-> fantasy-season
-                          season-by-position
+        position-made (-> season-by-position
                           (stat-utils/filter-stat (name stat))
                           (stat-utils/descriptive-stats-for-position-and-stat (name stat) position)
                           :mean)
-        position-attempts (-> fantasy-season
-                              season-by-position
+        position-attempts (-> season-by-position
                               (stat-utils/filter-stat (str (name stat) "a"))
                               (stat-utils/descriptive-stats-for-position-and-stat (str (name stat) "a") position)
                               :mean)
         position-percentage (/ position-made position-attempts)
-        #__ #_(println (format "League Average %s Percentage for %s:\n" (clojure.string/upper-case (name stat)) position)
-                   position-percentage)
         player-attempts (Double. ((keyword (str (name stat) "a")) player-season))
         player-percentage (try (/ (Double. ((keyword stat) player-season))
                                   player-attempts)
