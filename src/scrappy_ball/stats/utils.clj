@@ -20,7 +20,7 @@
              (keyword stat)) positional-season))
 
 (defn descriptive-stats-for-position-and-stat
-  "Given a year, statistics-type [totals or per_game], position, and stat;
+  "Given a year, statistics-type [totals or per_game or per_minute (per-36)], position, and stat;
   return descriptive some descriptive stats. For a list of available stats, and how to format them,
   check the utils ns."
   [filtered-stats stat position]
@@ -34,15 +34,18 @@
 
 (defn value-over-replacement
   [fantasy-season stat player-season]
-  (let [position (:pos player-season)
-        league-average (-> fantasy-season
-                           (season-by-position position)
-                           (filter-stat (name stat))
-                           (descriptive-stats-for-position-and-stat (name stat) position)
-                           :mean)
+  (let [position (-> (:pos player-season)
+                     (clojure.string/split #"-")
+                     first)
+        descriptive-stats (-> fantasy-season
+                              (season-by-position position)
+                              (filter-stat (name stat))
+                              (descriptive-stats-for-position-and-stat (name stat) position))
+        league-average (:mean descriptive-stats)
+        stdev (:stdev descriptive-stats)
         player-total (Double. ((keyword stat) player-season))]
-    (cond-> (/ player-total league-average)
-      (contains? #{"tov" "tov_per_g" "tov_per_mp"} (name stat)) (/))))
+    (cond-> (/ (- player-total league-average) stdev)
+      (contains? #{"tov" "tov_per_g" "tov_per_mp"} (name stat)) -)))
 
 (defn vorps-map
   [fantasy-season player-season fantasy-cats punts]

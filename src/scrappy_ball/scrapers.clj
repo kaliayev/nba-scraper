@@ -40,3 +40,21 @@
                                (conj acc (player-season->map player-season stats-set)))
                              [] raw-season)]
     (filter #(identity (:name %)) season-stats)))
+
+(defn get-season-totals
+  [year punts]
+  (let [season-with-punts (-> (get-fantasy-season year "totals")
+                              (stats-totals/get-fantasy-season punts))]
+    (sort-by #(get-in % [:vorps :total]) #(compare %2 %1) season-with-punts)))
+
+(defn get-season-per36
+  [year punts]
+  (let [season-with-punts (-> (get-fantasy-season year "per_minute")
+                              (stats-per36/get-fantasy-season punts))]
+    (sort-by #(get-in % [:vorps :total]) #(compare %2 %1) season-with-punts)))
+
+(defn top-n-fantasy-players
+  [ordered-season n]
+  (reduce (fn [acc player]
+            (conj acc {:name (:name player) :fantasy-value (get-in player [:vorps :total])}))
+          [] (take n ordered-season)))
