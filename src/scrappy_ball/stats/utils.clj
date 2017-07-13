@@ -1,6 +1,5 @@
 (ns scrappy-ball.stats.utils
   (:require [incanter.core :as incanter]
-            [incanter.charts :as charts]
             [incanter.stats :as desc-stats]))
 
 ;; TODO: Should vorps be normalized by standard deviation?
