@@ -34,7 +34,7 @@
                   (assoc acc :name (get-in stat [:attrs :csk])))))
             {} relevant-stats)))
 
-(defn get-fantasy-season
+(defn get-fantasy-season-hard
   [year stats-type]
   (let [stats-set (pick-stats-set stats-type)
         raw-season (get-raw-season year stats-type)
@@ -42,6 +42,8 @@
                                (conj acc (player-season->map player-season stats-set)))
                              [] raw-season)]
     (filter #(identity (:name %)) season-stats)))
+
+(def get-fantasy-season (memoize get-fantasy-season-hard))
 
 (defn get-season-totals
   [year punts]
